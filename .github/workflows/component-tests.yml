@@ -11,8 +11,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: ${{ matrix.build_type }}
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install component
+        uses: actions/checkout@v3
+        with:
+          path: tmp/component
+          fetch-depth: 1
+
+      - name: Check QUnit existence
+        shell: bash
+        run: |
+          [ 0 -lt $(find tmp/component/test -type f \( -name "*.js" -or -name "*.es6" \) 2> /dev/null | wc -l) ]
+
+  test:
+    needs: check
     runs-on: ubuntu-latest
     container: discourse/discourse_test:slim-browsers
     timeout-minutes: 15
@@ -24,22 +39,10 @@ jobs:
       PGUSER: discourse
       PGPASSWORD: discourse
 
-    strategy:
-      fail-fast: false
-
-      matrix:
-        build_type: ["frontend-legacy", "frontend"]
-
     steps:
       - uses: actions/checkout@v3
         with:
           repository: discourse/discourse
-          fetch-depth: 1
-
-      - name: Install component
-        uses: actions/checkout@v3
-        with:
-          path: tmp/component
           fetch-depth: 1
 
       - name: Setup Git
@@ -124,24 +127,8 @@ jobs:
         if: steps.app-cache.outputs.cache-hit != 'true'
         run: rm -rf tmp/app-cache/uploads && cp -r public/uploads tmp/app-cache/uploads
 
-      - name: Check qunit existence
-        id: check_qunit
-        shell: bash
-        run: |
-          if [ 0 -lt $(find tmp/component/test -type f \( -name "*.js" -or -name "*.es6" \) 2> /dev/null | wc -l) ]; then
-            echo "::set-output name=files_exist::true"
-          fi
-
       - name: Component QUnit
-        if: matrix.build_type == 'frontend-legacy' && steps.check_qunit.outputs.files_exist == 'true'
-        run: |
-          THEME_NAME=$(ruby -e 'require "json"; puts JSON.parse(File.read("tmp/component/about.json"))["name"]')
-          bundle exec rake themes:install -- "--{\"$THEME_NAME\": \"tmp/component\"}"
-          QUNIT_EMBER_CLI=0 UNICORN_TIMEOUT=120 bundle exec rake "themes:qunit[name,$THEME_NAME]"
-        timeout-minutes: 10
-
-      - name: Component QUnit (Ember CLI)
-        if: matrix.build_type == 'frontend' && steps.check_qunit.outputs.files_exist == 'true'
+        if: steps.check_qunit.outputs.files_exist == 'true'
         run: |
           THEME_NAME=$(ruby -e 'require "json"; puts JSON.parse(File.read("tmp/component/about.json"))["name"]')
           bundle exec rake themes:install -- "--{\"$THEME_NAME\": \"tmp/component\"}"
