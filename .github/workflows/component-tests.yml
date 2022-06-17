@@ -13,6 +13,8 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+    outputs:
+      tests_exist: ${{ steps.check_tests.outputs.tests_exist }}
 
     steps:
       - name: Install component
@@ -22,6 +24,7 @@ jobs:
           fetch-depth: 1
 
       - name: Check QUnit existence
+        id: check_tests
         shell: bash
         run: |
           if [ 0 -lt $(find tmp/component/test -type f \( -name "*.js" -or -name "*.es6" \) 2> /dev/null | wc -l) ]; then
