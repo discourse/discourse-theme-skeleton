@@ -1,3 +1,5 @@
 en:
   theme_metadata:
     description: "TODO"
+    settings:
+      example_setting: "A description of a setting."
