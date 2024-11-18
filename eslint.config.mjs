@@ -1,3 +1,3 @@
-import DiscourseRecommended from "@discourse/lint-configs/eslint";
+import DiscourseRecommendedTheme from "@discourse/lint-configs/eslint-theme";
 
-export default [...DiscourseRecommended];
+export default [...DiscourseRecommendedTheme];
