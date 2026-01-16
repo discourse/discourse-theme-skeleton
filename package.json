@@ -21,7 +21,6 @@
     "lint:hbs:fix": "ember-template-lint javascripts/**/*.gjs --fix --no-error-on-unmatched-pattern",
     "lint:prettier": "pnpm prettier {javascripts,desktop,mobile,common,scss}/**/*.scss {javascripts,test}/**/*.{js,gjs} --check --no-error-on-unmatched-pattern",
     "lint:prettier:fix": "pnpm prettier {javascripts,desktop,mobile,common,scss}/**/*.scss {javascripts,test}/**/*.{js,gjs} -w --no-error-on-unmatched-pattern",
-    "lint:glint": "ember-tsc -b",
     "lint:types": "ember-tsc -b"
   },
   "engines": {
