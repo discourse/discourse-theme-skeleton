@@ -4,7 +4,7 @@
     "@discourse/lint-configs": "2.37.0",
     "@glint/ember-tsc": "1.0.9",
     "concurrently": "^9.2.1",
-    "discourse": "npm:@discourse/types@2026.1.0-61b723a",
+    "discourse": "npm:@discourse/types@2026.1.0-974733b",
     "ember-template-lint": "7.9.3",
     "eslint": "9.39.2",
     "prettier": "3.8.0",
